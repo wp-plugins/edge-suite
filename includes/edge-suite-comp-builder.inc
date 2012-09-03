@@ -102,7 +102,6 @@ class EdgeCompositionBuilder {
    *   Edge project directory
    */
   public function __construct($base_dir, $project_dir) {
-//    global $user;
     $this->edgeDir = $base_dir;
     $this->edgeProjectDir = $project_dir;
 
@@ -110,17 +109,34 @@ class EdgeCompositionBuilder {
     $this->tmpDir = $this->tmpDirBase;
 
     if (!is_dir($base_dir . '/edge_tmp')) {
-      mkdir($base_dir . '/edge_tmp');
+      if(!mkdir_recursive($base_dir . '/edge_tmp')){
+        throw new Exception ("Can't create edge_tmp directory.");
+      };
     }
 
     if (!is_dir($this->tmpDirBase)) {
-      mkdir($this->tmpDirBase);
+      if(!mkdir_recursive($this->tmpDirBase)){
+        throw new Exception ("Can't create project tmp directory.");
+      }
     }
 
     if (!is_dir($this->edgeProjectDir)) {
-      mkdir($this->edgeProjectDir);
+      if(!mkdir_recursive($this->edgeProjectDir)){
+        throw new Exception ("Can't project directory.");
+      }
     }
 
+    if(!dir_is_writable($base_dir . '/edge_tmp')){
+      throw new Exception("edge_tmp is not writable.<br />");
+    }
+
+    if(!dir_is_writable($this->tmpDirBase)){
+      throw new Exception("Project tmp directory is not writable.<br />");
+    }
+
+    if(!dir_is_writable($this->edgeProjectDir)){
+      throw new Exception("Specific project directory is not writable.<br />");
+    }
 
     $this->dimensions = array(
       'width' => 0,
@@ -207,7 +223,9 @@ class EdgeCompositionBuilder {
         throw new Exception('The composition directory already exists. Please use the according action to replace a composition.');
       }
     }
-    mkdir($this->destinationDir);
+    if(!mkdir_recursive($this->destinationDir)){
+      throw new Exception ('The project directory could not be created.');
+    }
 
     // Extract the archive.
     $this->extract($this->file, $this->tmpDirBase);
@@ -495,7 +513,7 @@ class EdgeCompositionBuilder {
 
     // Set up shared folder if it doesn't exist.
     if (!is_dir($this->edgeDir . '/edge_includes')) {
-      mkdir($this->edgeDir . '/edge_includes');
+      mkdir_recursive($this->edgeDir . '/edge_includes');
     }
 
     // Collect libs in array to save them in configuration.
@@ -569,7 +587,7 @@ class EdgeCompositionBuilder {
     $allowed_extensions = str_replace(',', '|', $allowed_extensions);
     // Check if list is valid.
     if (!preg_match('/^([a-zA-Z0-9]{2,6}\|)*([a-zA-Z0-9]{2,6})$/', $allowed_extensions)) {
-      $allowed_extensions = 'js|png|jpg|gif|svg';
+      $allowed_extensions = 'js|png|jpg|gif|svg|css';
     }
 
     $files = file_scan_directory($src, '/\.(' . $allowed_extensions . ')$/');
@@ -581,7 +599,7 @@ class EdgeCompositionBuilder {
       // Get dir path relative to project tmp base path without leading slash.
       $rel_dir = substr($dir, strlen($src) + 1);
       if (!file_exists($dest . '/' . $rel_dir)) {
-        mkdir($dest . '/' . $rel_dir);
+        mkdir_recursive($dest . '/' . $rel_dir);
       }
       // TODO: Feedback if file couldn't be moved.
       $file_info = pathinfo($f);

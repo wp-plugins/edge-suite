@@ -113,7 +113,7 @@ function edge_suite_boot() {
   define('EDGE_SUITE_COMP_PROJECT_DIR_REL', EDGE_SUITE_PUBLIC_DIR_REL . '/project');
 
   //Check if dir is writable and create directory structure.
-  if (!wp_mkdir_p(EDGE_SUITE_COMP_PROJECT_DIR)) {
+  if (!mkdir_recursive(EDGE_SUITE_COMP_PROJECT_DIR)) {
     $message = sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?'), EDGE_SUITE_COMP_PROJECT_DIR_REL);
     return array('error' => $message);
   }

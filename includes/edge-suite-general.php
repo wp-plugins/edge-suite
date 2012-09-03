@@ -17,6 +17,19 @@ function rmdir_recursive($path) {
   $wp_filesystem->rmdir($path, TRUE);
 }
 
+function mkdir_recursive($path){
+  if (wp_mkdir_p($path)) {
+    return true;
+  }
+  else{
+    return $path . " could not be created.";
+  }
+}
+
+function dir_is_writable($path){
+  global $wp_filesystem;
+  return $wp_filesystem->is_writable($path);
+}
 
 function check_plain($text) {
   return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');

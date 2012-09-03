@@ -56,15 +56,21 @@ function edge_suite_process_upload() {
       throw new Exception("You didn't select a file to upload<br />");
     }
 
+    // Init file system
+    WP_Filesystem();
 
-    //Here we check that $ok was not set to 0 by an error
     $tmp_file = EDGE_SUITE_PUBLIC_DIR . '/tmp/' . $_FILES['edge_suite_composition_upload']['name'];
     if (!is_dir(EDGE_SUITE_PUBLIC_DIR . '/tmp')) {
-      mkdir(EDGE_SUITE_PUBLIC_DIR . '/tmp');
+      if(!mkdir_recursive(EDGE_SUITE_PUBLIC_DIR . '/tmp')){
+        throw new Exception("Edge suite tmp could not be created.<br />");
+      }
+    }
+    if(!dir_is_writable(EDGE_SUITE_PUBLIC_DIR . '/tmp')){
+      throw new Exception("Edge suite tmp is not writable.<br />");
     }
 
     if (move_uploaded_file($_FILES['edge_suite_composition_upload']['tmp_name'], $tmp_file)) {
-      WP_Filesystem();
+
       edge_suite_comp_create($tmp_file, TRUE);
       echo '<div style="background-color: rgb(255, 251, 204);" id="message" class="updated fade">';
       echo "<p>The file " . basename($_FILES['edge_suite_composition_upload']['name']) . " has been uploaded.</p>";

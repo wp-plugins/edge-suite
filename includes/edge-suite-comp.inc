@@ -38,9 +38,9 @@ function edge_suite_comp_create($file, $replace_libs = FALSE, $definition_id_cur
   // Check if main edge directory and project dir exists, if not create it.
   if (!is_dir(EDGE_SUITE_COMP_PROJECT_DIR)) {
     if (!is_dir(EDGE_SUITE_PUBLIC_DIR)) {
-      mkdir(EDGE_SUITE_PUBLIC_DIR);
+      mkdir_recursive(EDGE_SUITE_PUBLIC_DIR);
     }
-    mkdir(EDGE_SUITE_COMP_PROJECT_DIR);
+    mkdir_recursive(EDGE_SUITE_COMP_PROJECT_DIR);
   }
 
   // Set up composition builder.
