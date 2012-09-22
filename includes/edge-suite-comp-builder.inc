@@ -324,9 +324,9 @@ class EdgeCompositionBuilder {
     }
 
     // Get archiver.
-    $success = unzip_file($file, $destination);
-    if (!$success) {
-      throw new Exception('Extraction of ' . $file . 'failed.');
+    $success = unzip($file, $destination);
+    if (is_wp_error($success)) {
+      throw new Exception('Extraction of ' . $file . ' failed.');
     }
   }
 
@@ -534,7 +534,7 @@ class EdgeCompositionBuilder {
 
 
         if ($overwrite || !$exists) {
-          $moved = $wp_filesystem->move($lib->uri, $this->edgeDir . '/edge_includes/' . $lib->filename, TRUE);
+          $moved = move_file($lib->uri, $this->edgeDir . '/edge_includes/' . $lib->filename);
           if (!$moved) {
             set_message('Library ' . check_plain($lib->filename) . ' could not be added/moved.');
           }
@@ -603,7 +603,7 @@ class EdgeCompositionBuilder {
       }
       // TODO: Feedback if file couldn't be moved.
       $file_info = pathinfo($f);
-      $moved = $wp_filesystem->move($f, $dest . '/' . $rel_dir . '/' . $file_info['basename']);
+      $moved = move_file($f, $dest . '/' . $rel_dir . '/' . $file_info['basename']);
     }
   }
 

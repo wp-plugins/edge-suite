@@ -1,6 +1,6 @@
 === Edge Suite ===
 Contributors: ti2m
-Tags: media, animation, interactive, adobe edge, edge animate, edge, embed, integration
+Tags: media, animation, interactive, adobe edge animate, edge animate, edge, embed, integration
 Requires at least: 4.3
 Tested up to: 4.3
 Stable tag: /trunk/
@@ -16,6 +16,10 @@ Upload of compositions through a zipped archive. Integrate Adobe Edge Animate co
 
 Since Edge Animate itself is still in pre-release this plugin is a moving target as well and should therefore not yet be used in production.
 
+There have been problems with unzipping composition archives on shared hosting plans due to the wordpress filesystem. More detailed info is available in the FAQ section.
+
+Roadmap: FTP Filesystem support, data injection
+
 Please help to review and test the plugin. Feedback is appreciated.
 
 == Features ==
@@ -24,6 +28,11 @@ Please help to review and test the plugin. Feedback is appreciated.
 * Manage all compositions
 * Easy placement of compositions on the website
 
+== Frequently Asked Questions ==
+
+= PHP ZipArchive not found =
+
+zip.so needs to be installed as a PHP library
 
 == Installation ==
 
@@ -49,3 +58,9 @@ Please help to review and test the plugin. Feedback is appreciated.
 == Support ==
 
 Please report any bugs to the Edge Suite support queue on wordpress.
+
+
+== Changelog ==
+
+= 0.2 =
+Change of filesystem usage

@@ -88,13 +88,12 @@ function edge_suite_comp_create($file, $replace_libs = FALSE, $definition_id_cur
       $def_name = edge_suite_comp_unique_name($def_record);
 
       $project_path = EDGE_SUITE_COMP_PROJECT_DIR . '/' . $def_name;
-      rename($project_tmp_path, $project_path);
+      move_file($project_tmp_path, $project_path);
 
       $success = TRUE;
     }
   } catch (Exception $e) {
     // Clean out all files.
-    print $e->getMessage();
 
     // Make sure source extraction directory gets cleaned out.
     $edge_build->cleanup();
@@ -106,6 +105,9 @@ function edge_suite_comp_create($file, $replace_libs = FALSE, $definition_id_cur
     if (isset($project_path) && file_exists($project_path)) {
       rmdir_recursive($project_path);
     }
+
+    // Hand exception to the next level.
+    throw new Exception($e->getMessage());
     // TODO: Libraries might have been copied. Critical?
   }
 

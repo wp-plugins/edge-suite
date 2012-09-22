@@ -7,18 +7,6 @@
     <table class="form-table">
 
       <tr valign="top">
-        <th scope="row">Max upload file size</th>
-        <td>
-          <input type="text" name="edge_suite_max_size"
-                 value="<?php echo get_option('edge_suite_max_size'); ?>"/>
-          <span class="setting-description">
-            File size in MB<br/>This is the max size that your file uploads will be limited to. 2 MB is the default upload size.
-          </span>
-        </td>
-      </tr>
-
-
-      <tr valign="top">
         <th scope="row">Default Composition</th>
         <td>
           <?php
@@ -47,12 +35,39 @@
         </td>
       </tr>
 
+      <tr valign="top">
+          <th scope="row">Max upload file size</th>
+          <td>
+              <input type="text" name="edge_suite_max_size"
+                     value="<?php echo intval(get_option('edge_suite_max_size')); ?>"/>
+        <span class="setting-description">
+          File size in MB<br/>This is the max size that your file uploads will be limited to. 2 MB is the default upload size.
+        </span>
+          </td>
+      </tr>
+
+      <tr valign="top">
+          <th scope="row">Deactivation deletion</th>
+          <td>
+            <?php
+            $selected = intval(get_option('edge_suite_deactivation_delete')) == 1 ? 'checked="checked"' : '';
+            ?>
+            <p><input type="checkbox" name="edge_suite_deactivation_delete" value="1" <?php echo $selected; ?>"/>
+                Delete Edge Suite assets and settings on plugin deactivation</p>
+            <span class="setting-description">
+              Activate this option to delete all uploaded compositions (files and database entries) including all Edge Suite
+              settings from wordpress when deactivating the plugin. This should be activated if you are unable to delete files
+              manually through FTP and want to clean out Edge Suite completely.
+            </span>
+          </td>
+      </tr>
+
 
     </table>
 
     <input type="hidden" name="action" value="update"/>
     <input type="hidden" name="page_options"
-           value="edge_suite_max_size,edge_suite_comp_default,edge_suite_comp_homepage"/>
+           value="edge_suite_max_size,edge_suite_comp_default,edge_suite_comp_homepage,edge_suite_deactivation_delete"/>
 
     <p class="submit">
       <input type="submit" class="button-primary"

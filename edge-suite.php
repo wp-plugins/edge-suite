@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Edge Suite
-Plugin URI: http://timm-jansen.net/edge_suite_wp
+Plugin URI: http://edgedocks.com/edge_suite
 Description: Upload Adobe Edge compositions to your website.
 Author: Timm Jansen
 Author URI: http://timm-jansen.net/
-Version: 0.1
+Version: 0.2
 */
 
 /*  Copyright 2012 Timm Jansen (email: info at timm-jansen.net)
@@ -27,10 +27,35 @@ Version: 0.1
 
 /**
  * This is a port of the Drupal Edge Suite module (done by me as well) for wordpress.
- */
+*/
 
 require_once('includes/edge-suite-general.php');
 require_once('includes/edge-suite-comp.inc');
+
+/**
+ * Set all needed constants
+ */
+function edge_suite_init_constants(){
+  // Respect general upload path.
+  $upload_dir = get_option('upload_path');
+  if (empty($upload_dir)) {
+    $upload_dir = 'wp-content/uploads';
+  }
+  $upload_dir = untrailingslashit($upload_dir);
+
+  define('EDGE_SUITE_PUBLIC_DIR_REL', get_bloginfo('wpurl') . '/' . $upload_dir . '/edge_suite');
+  define('EDGE_SUITE_PUBLIC_DIR', untrailingslashit(ABSPATH) . '/' . $upload_dir . '/edge_suite');
+
+  define('EDGE_SUITE_COMP_PROJECT_DIR', EDGE_SUITE_PUBLIC_DIR . '/project');
+  define('EDGE_SUITE_COMP_PROJECT_DIR_REL', EDGE_SUITE_PUBLIC_DIR_REL . '/project');
+
+
+  define('EDGE_SUITE_ALLOWED_ASSET_EXTENSIONS', 'js|png|jpg|gif|svg|css');
+
+
+  define('REQUEST_TIME', time());
+
+}
 
 /*** UN/INSTALL ***/
 
@@ -60,35 +85,54 @@ function edge_suite_install() {
 
   // Default options.
   add_option('edge_suite_max_size', 2);
-  add_option('edge_suite_comp_default', 0);
+  add_option('edge_suite_comp_default', -1);
   add_option('edge_suite_comp_homepage', 0);
+  add_option('edge_suite_deactivation_delete', 0);
+
+  // Create main edge suite directory.
+  mkdir_recursive(trailingslashit(EDGE_SUITE_PUBLIC_DIR));
 }
 
 register_activation_hook(__FILE__, 'edge_suite_install');
 
 
 function edge_suite_uninstall() {
-  global $wpdb;
-  $table_name = $wpdb->prefix . "edge_suite_composition_definition";
-  if ($wpdb->get_var("show tables like '$table_name'") == $table_name) {
-    $wpdb->query('DROP TABLE ' . $table_name);
+  if(get_option('edge_suite_deactivation_delete') == 1){
+    edge_suite_init_constants();
+
+    global $wpdb;
+    $table_name = $wpdb->prefix . "edge_suite_composition_definition";
+    if ($wpdb->get_var("show tables like '$table_name'") == $table_name) {
+      $wpdb->query('DROP TABLE ' . $table_name);
+    }
+
+    // Delete all edge directories
+    rmdir_recursive(trailingslashit(EDGE_SUITE_PUBLIC_DIR));
+
+    // Delete options
+    delete_option('edge_suite_max_size');
+    delete_option('edge_suite_comp_default');
+    delete_option('edge_suite_comp_homepage');
+    delete_option('edge_suite_deactivation_delete');
   }
-  // Todo: Delete all edge directories / options / meta data?
 }
 
 register_deactivation_hook(__FILE__, 'edge_suite_uninstall');
+//register_uninstall_hook(__FILE__, 'edge_suite_uninstall');
 
 
 /**
- * Register general options.
- */
+* Register general options.
+*/
 function edge_suite_options_init() {
   register_setting('edge_suite_options', 'edge_suite_max_size');
   register_setting('edge_suite_options', 'edge_suite_comp_default');
   register_setting('edge_suite_options', 'edge_suite_comp_homepage');
+  register_setting('edge_suite_options', 'edge_suite_deactivation_delete');
 }
 
 add_action('admin_init', 'edge_suite_options_init');
+
 
 
 /** INIT **/
@@ -100,25 +144,13 @@ function edge_suite_boot() {
   $edge_suite->stage = "";
   $edge_suite->msg = array();
 
-  // Respect general upload path.
-  $upload_dir = get_option('upload_path');
-  if (empty($upload_dir)) {
-    $upload_dir = 'wp-content/uploads';
-  }
-
-  define('EDGE_SUITE_PUBLIC_DIR_REL', get_bloginfo('wpurl') . '/' . $upload_dir . '/edge_suite');
-  define('EDGE_SUITE_PUBLIC_DIR', ABSPATH . '/' . $upload_dir . '/edge_suite');
-
-  define('EDGE_SUITE_COMP_PROJECT_DIR', EDGE_SUITE_PUBLIC_DIR . '/project');
-  define('EDGE_SUITE_COMP_PROJECT_DIR_REL', EDGE_SUITE_PUBLIC_DIR_REL . '/project');
+  edge_suite_init_constants();
 
   //Check if dir is writable and create directory structure.
   if (!mkdir_recursive(EDGE_SUITE_COMP_PROJECT_DIR)) {
-    $message = sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?'), EDGE_SUITE_COMP_PROJECT_DIR_REL);
-    return array('error' => $message);
+    print sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?'), EDGE_SUITE_COMP_PROJECT_DIR_REL);
   }
 
-  define('REQUEST_TIME', time());
 }
 
 /**

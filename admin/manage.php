@@ -57,7 +57,8 @@ function edge_suite_process_upload() {
     }
 
     // Init file system
-    WP_Filesystem();
+    // Todo: this doesn't work with FTP
+    //WP_Filesystem();
 
     $tmp_file = EDGE_SUITE_PUBLIC_DIR . '/tmp/' . $_FILES['edge_suite_composition_upload']['name'];
     if (!is_dir(EDGE_SUITE_PUBLIC_DIR . '/tmp')) {
@@ -92,8 +93,16 @@ function edge_suite_process_upload() {
 <div class="wrap">
   <h2>Edge Suite - Manage compositions</h2>
 
+  <?php
+  $msg = check_filesystem();
+    if(!empty($msg)){
+      echo '<div class="error"><p>';
+      echo implode('</br>',$msg);
+      echo '</p></div>';
+    }
+  ?>
 
-  <h3>Upload new composition</h3>
+<h3>Upload new composition</h3>
 <form enctype="multipart/form-data" action="<?php echo $_SERVER["REQUEST_URI"]; ?>" method="POST">
   <input name="edge_suite_composition_upload" type="file" />
   <input type="hidden" name="upit" value="yes" />
