@@ -257,7 +257,7 @@ class EdgeCompositionBuilder {
     $files_names_ignored = array();
     foreach ($ignored_files as $f) {
       if (!is_dir($f)) {
-        $filename = basename($f);
+        $filename = substr($f, strlen($this->tmpDir));
         if ($filename == $this->projectName . '.edge' || $filename == $this->projectName . '.html') {
           $files_names_obsolete[] = $filename;
         }
@@ -267,7 +267,7 @@ class EdgeCompositionBuilder {
       }
     }
     $this->setFileMessages($files_names_obsolete, 'The following files were ignored as they are not needed:');
-    $this->setFileMessages($files_names_ignored, 'The following files were ignored as they are not supported:', 'warning');
+    $this->setFileMessages($files_names_ignored, 'The following files were ignored as they are not needed/supported:', 'warning');
 
     // Delete the tmp archive directory with all remaining files.
     $this->cleanup();
@@ -598,6 +598,9 @@ class EdgeCompositionBuilder {
       // Create folder structure in the permanent directory.
       // Get dir path relative to project tmp base path without leading slash.
       $rel_dir = substr($dir, strlen($src) + 1);
+      if(substr($rel_dir, 0 ,8) === 'publish/'){
+        continue;
+      }
       if (!file_exists($dest . '/' . $rel_dir)) {
         mkdir_recursive($dest . '/' . $rel_dir);
       }

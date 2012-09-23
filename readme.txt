@@ -30,6 +30,29 @@ Please help to review and test the plugin. Feedback is appreciated.
 
 == Frequently Asked Questions ==
 
+= Animations don't show up =
+Uploading worked but nothings shows up on the page. Things to check:
+
+* Edge Suite doesn't support minified/published projects yet. Just zip the raw project folder (without the publish folder)
+
+* Look at the source code of the page and search for:
+
+* "stage" - You should find a div container, if so HTML rendering went fine.
+
+* "_preloader" - You should find a script tag, if so JS inclusion went fine.
+
+* If "stage" or "_preloader" are not found, disable other plugins for testing to check if they might interferer.
+
+* Open the debug console in Chrome (mac: alt + cmd + j) or Firefox and check for JavaScript errors.
+
+* For testing remove all other fancy JavaScript like galleries, slideshows, etc. that are placed alongside the animation, the JS might collide.
+
+= Head Cleaner: Animations don't show up =
+
+Head Cleaner basically skips the processing of edge_suite_header() which is needed to inject the Edge Javascript.
+Under Settings > Head Cleaner > Active Filters check the box "Don't process!" for "edge_suite_header" and click "Save options".
+This stops Head Cleaner from "processing" ede_suite_header(), which basically means allowing edge_suite_header() (reverse logic).
+
 = PHP ZipArchive not found =
 
 zip.so needs to be installed as a PHP library
