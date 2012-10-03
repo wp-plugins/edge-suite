@@ -22,6 +22,10 @@ Roadmap: FTP Filesystem support, data injection
 
 Please help to review and test the plugin. Feedback is appreciated.
 
+Resources:
+- <a href="http://edgedocks.com/content/edge-suite-integrate-edge-animate-wordpress">tutorial</a> on how to install and use Edge Suite
+- General resources on Edge Docks <a href="http://edgedocks.com/edge_suite_wp">EdgeDocks.com</a>
+
 == Features ==
 
 * Upload Edge Animate compositions within one zipped archive
