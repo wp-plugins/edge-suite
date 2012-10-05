@@ -5,7 +5,7 @@ Plugin URI: http://edgedocks.com/edge_suite
 Description: Upload Adobe Edge compositions to your website.
 Author: Timm Jansen
 Author URI: http://timm-jansen.net/
-Version: 0.2
+Version: 0.3
 */
 
 /*  Copyright 2012 Timm Jansen (email: info at timm-jansen.net)
