@@ -77,7 +77,6 @@ function check_filesystem(){
 function unzip($file, $to){
   if ( class_exists('ZipArchive') && apply_filters('unzip_file_use_ziparchive', true ) ) {
 
-
     require_once(ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php');
     require_once(ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php');
     $filesystem = new WP_Filesystem_Direct(null);
@@ -86,6 +85,7 @@ function unzip($file, $to){
 
     // PHP4-compat - php4 classes can't contain constants
     $zopen = $z->open($file, /* ZIPARCHIVE::CHECKCONS */ 4);
+    $ignored = array();
     if ( true !== $zopen )
       return new WP_Error('incompatible_archive', __('Incompatible Archive.'));
 
@@ -101,6 +101,7 @@ function unzip($file, $to){
         continue;
 
       if(!preg_match('/(.*)\.(' . EDGE_SUITE_ALLOWED_ASSET_EXTENSIONS . ')$/', $info['name'])){
+        $ignored[] = $info['name'];
         continue;
       }
 
@@ -115,9 +116,11 @@ function unzip($file, $to){
 
     $z->close();
 
-    return true;
+    return $ignored;
 
   }
+
+  return false;
 }
 
 function file_scan_directory($dir, $pattern) {

@@ -39,7 +39,7 @@ function edge_suite_process_upload() {
     $check_file = strtolower($_FILES['edge_suite_composition_upload']['name']);
     $ext_check = end(explode('.', $check_file));
 
-    if (!in_array($ext_check, array('zip', 'gz'))) {
+    if (!in_array($ext_check, array('zip', 'gz', 'oam'))) {
       throw new Exception("Invalid filetype.<br />");
     }
 
@@ -102,17 +102,18 @@ function edge_suite_process_upload() {
     }
   ?>
 
-<h3>Upload new composition</h3>
-<form enctype="multipart/form-data" action="<?php echo $_SERVER["REQUEST_URI"]; ?>" method="POST">
-  <input name="edge_suite_composition_upload" type="file" />
-  <input type="hidden" name="upit" value="yes" />
-  <input type="hidden" name="action" value="upload" />
-  <p>Upload a new Adobe Edge composition in a zipped archive, allowed formats are zip and gz. </br>
-      Minified projects are not supported yet, please use the raw project files and compress them to an archive.</p>
-  <p class="submit">
-    <input type="submit" class="button-primary" value="Upload" />
-  </p>
-</form>
+    <h3>Upload new composition</h3>
+    <form enctype="multipart/form-data" action="<?php echo $_SERVER["REQUEST_URI"]; ?>" method="POST">
+        <input name="edge_suite_composition_upload" type="file" />
+        <input type="hidden" name="upit" value="yes" />
+        <input type="hidden" name="action" value="upload" />
+        <p>Upload a new Adobe Edge composition. </br>
+           Use Adobe Edge OAM project files which are being generated when publishing the project with option "Animate Deployment Package".
+        </p>
+        <p class="submit">
+            <input type="submit" class="button-primary" value="Upload" />
+        </p>
+    </form>
 
 <h3>Delete selected composition</h3>
 

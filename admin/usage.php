@@ -26,9 +26,9 @@
       calls to header_image() or get_header_image() in
       case the composition should be the only thing in the header.
     </li>
-    <li>Zip the main folder of the composition that you want to upload.</li>
+    <li>Publish your project in Adobe Edge with option "Animate Deployment Package". It will generate a single OAM file.</li>
     <li>Go to <a href="/wp-admin/admin.php?page=edge-suite/edge-suite.php">Manage</a>,
-      select the archive and upload it.
+      select the oam file in the "publish/animate package" folder and upload it.
     </li>
     <li>Upload as many composition as you want.</li>
     <li><p>After uploading, the compositions can be placed in multiple ways on

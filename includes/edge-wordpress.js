@@ -23,40 +23,57 @@ AdobeEdge.alterRegisterCompositionDefn = function (compId, symbols, fonts, resou
 
   // Check if one of the know patterns for the stage id can be found.
   var stage_name = "";
-  if (symbols.stage.states["Base State"]["${_Stage}"]) {
+  var states = "";
+  if(symbols.stage.states != undefined){
+    states = symbols.stage.states;
+  }
+  else if(symbols.stage.s != undefined){
+    states = symbols.stage.s;
+  }
+
+  if (states["Base State"]["${_Stage}"]) {
     stage_name = '_Stage';
   }
   else {
-    if (symbols.stage.states["Base State"]["${_stage}"]) {
+    if (states["Base State"]["${_stage}"]) {
       stage_name = '_stage';
     }
   }
 
   if (stage_name != "") {
     // Get the original definition for the stage.
-    var stage_src = symbols.stage.states["Base State"]["${" + stage_name + "}"];
-    delete symbols.stage.states["Base State"]["${" + stage_name + "}"];
+    var stage_src = states["Base State"]["${" + stage_name + "}"];
+    delete states["Base State"]["${" + stage_name + "}"];
 
     // Inject the stage definition for all instances of a composition.
     var stages = $("." + compId);
     for (var i = 0; i < stages.length; i++) {
       var stage_id = $(stages[i]).attr('id');
-      symbols.stage.states["Base State"]["${_" + stage_id + "}"] = stage_src;
+      states["Base State"]["${_" + stage_id + "}"] = stage_src;
     }
   }
 
-  for (var key in symbols) {
-    var symbol = symbols[key];
-    if (symbol.content != undefined && symbol.content.dom != undefined) {
-      AdobeEdge.alterDomPaths(symbol.content.dom, compId);
+    for (var key in symbols) {
+        var dom = null;
+        // not minified version
+        if (symbols[key].content != undefined && symbols[key].content.dom != undefined) {
+            dom = symbols[key].content.dom;
+        }
+        // minified version
+        else if (symbols[key].cn != undefined && symbols[key].cn.dom != undefined) {
+            dom = symbols[key].cn.dom;
+        }
+        if(dom != null){
+            AdobeEdge.alterDomPaths(dom, compId);
+        }
     }
-  }
+
+
 
   var project_path = AdobeEdge.pathPrefix.comps[compId];
   for (var font_key in fonts) {
     var font = fonts[font_key];
     fonts[font_key] = font.replace(/href="([a-z0-9_-]*.css)"/g, 'href="' + project_path + '\/$1"');
-    console.log(fonts[font_key]);
   }
 
   registerCompositionDefn(compId, symbols, fonts, resources);

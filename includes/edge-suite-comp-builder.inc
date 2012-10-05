@@ -324,9 +324,13 @@ class EdgeCompositionBuilder {
     }
 
     // Get archiver.
-    $success = unzip($file, $destination);
-    if (is_wp_error($success)) {
+    $result = unzip($file, $destination);
+    if (is_wp_error($result)) {
       throw new Exception('Extraction of ' . $file . ' failed.');
+    }
+    // Add ignored files
+    if(is_array($result)){
+      // Todo: handle ignored files
     }
   }
 
@@ -398,27 +402,7 @@ class EdgeCompositionBuilder {
     $file = $this->mainEdgeJS;
     $content = file_get_contents($file);
 
-    // Parse height and width of the composition.
-    // Get the stage section first.
-    $pattern_stage_style = '/"\${_stage}":\s?\[\n?\r?((\s*\[(.)*\],?)*)/i';
-    $matches = array();
-    if (preg_match($pattern_stage_style, $content, $matches)) {
-      $matches_dimensions = array();
-      // Parse the actual pixel.
-      $dimension_keys = implode('|', array_keys($this->dimensions));
-      $pattern_stage_size = '/\["style",\s?"(' . $dimension_keys . ')*",\s?\'([0-9]*(px|%))\'\]/';
-      if (count($matches) > 1 && preg_match_all($pattern_stage_size, $matches[1], $matches_dimensions) && count($matches_dimensions) == 4 && count($matches_dimensions[1]) == count($matches_dimensions[2])) {
-        $keys = $matches_dimensions[1];
-        $values = $matches_dimensions[2];
-
-        foreach (array_keys($this->dimensions) as $dimension_key) {
-          $pos = array_search($dimension_key, $keys);
-          if ($pos !== FALSE) {
-            $this->dimensions[$dimension_key] = $values[$pos];
-          }
-        }
-      }
-    }
+    $this->parseDimensions($content);
 
     // Extract the composition id.
     // The relevant JS structure (might be minified).
@@ -443,6 +427,98 @@ class EdgeCompositionBuilder {
     fclose($fh);
   }
 
+  protected function parseDimensions($content){
+    // Parse dimensions of the composition.
+    // Uncompressed version.
+    // Get the stage section first.
+    $pattern_stage_style = '/"\${_stage}":\s?\[\n?\r?((\s*\[(.)*\],?)*)/i';
+    $matches = array();
+    if (preg_match($pattern_stage_style, $content, $matches)) {
+      $matches_dimensions = array();
+      // Parse the actual pixel.
+      $dimension_keys = implode('|', array_keys($this->dimensions));
+      $pattern_stage_size = '/\["style",\s?"(' . $dimension_keys . ')*",\s?\'([0-9]*(px|%))\'\]/';
+      if (count($matches) > 1 && preg_match_all($pattern_stage_size, $matches[1], $matches_dimensions) && count($matches_dimensions) == 4 && count($matches_dimensions[1]) == count($matches_dimensions[2])) {
+        $keys = $matches_dimensions[1];
+        $values = $matches_dimensions[2];
+
+        foreach (array_keys($this->dimensions) as $dimension_key) {
+          $pos = array_search($dimension_key, $keys);
+          if ($pos !== FALSE) {
+            $this->dimensions[$dimension_key] = $values[$pos];
+          }
+        }
+      }
+    }
+
+    // Minified version.
+    // Find stage variable first.
+    $stage_variable_match = array();
+    $dimension_error_msg = '';
+    if (preg_match('/(e\d*)=\'\$\{_Stage\}\'/', $content, $stage_variable_match)) {
+      $stage_variable = $stage_variable_match[1];
+
+      // Find property function calls for stage variable.
+      $pattern_stage_style = '/;A1.A\(' . $stage_variable . '\)(\.P\([a-z0-9,%"_]+\))*;/i';
+      $matches = array();
+      if (preg_match($pattern_stage_style, $content, $matches)) {
+        $properties = array();
+        // Explode property values.
+        if (preg_match_all('/P\(([a-z0-9,%"_]+)\)/i', $matches[0], $properties)) {
+          foreach($properties[1] as $property_string){
+            $property_values = explode(',',$property_string);
+            // Full properties: P(h,280,_,_,p) or P(w,100,_,_,"%").
+            if(count($property_values) == 5){
+              // Check if it's pixel or relative measure.
+              $measure = '';
+              if($property_values[4] == '"%"'){
+                $measure = '%';
+              }
+              else if($property_values[4] == 'p'){
+                $measure = 'px';
+              }
+              else{
+                continue;
+              }
+            }
+            //P(xw,600)
+            if(count($property_values) == 2){
+              $measure = 'px';
+            }
+
+            if( !empty($measure)){
+              switch($property_values[0]){
+                case 'h':
+                  $this->dimensions['height'] = $property_values[1] . $measure;
+                  break;
+
+                case 'w':
+                  $this->dimensions['width'] = $property_values[1] . $measure;
+                  break;
+
+              }
+            }
+          }
+        }
+        else{
+          $dimension_error_msg = 'Unable to explode stage properties.';
+        }
+      }
+      else{
+        $dimension_error_msg = 'Unable to spot stage property calls.';
+      }
+    }
+    else{
+      $dimension_error_msg = 'Unable to spot stage variable.';
+    }
+
+    if ($this->dimensions['height'] == 0 || $this->dimensions['width'] == 0){
+      set_message(t('Auto detection of stage dimensions failed: ' . $dimension_error_msg));
+    }
+    else{
+      set_message(t('Auto detection of stage dimensions successful.'));
+    }
+  }
 
   /**
    * Alters the edge preloader file by injecting custom function calls.

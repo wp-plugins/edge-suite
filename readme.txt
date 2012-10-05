@@ -72,8 +72,8 @@ zip.so needs to be installed as a PHP library
 	
 1.  Placing the code within in a link tag (<a href=""...) can cause problems when the composition is interactive.
 1.  You might also want to remove code that places other header images e.g. calls to header_image() or get_header_image() in case the composition should be the only thing in the header.
-1. Zip the main folder of the composition that you want to upload.
-1. Go to "Edge Suite > Manage", select the archive and upload it.
+1. Publish your project in Adobe Edge with option "Animate Deployment Package". It will generate a single OAM file.
+1. Go to "Edge Suite > Manage", select the oam file and upload it.
 1. Upload as many composition as you want.
 1. After uploading, the compositions can be placed in multiple ways on the website:
     * Default: A composition that should be shown on all pages can be selected on the "Edge Suite > settings" page under "Default composition".
@@ -90,3 +90,6 @@ Please report any bugs to the Edge Suite support queue on wordpress.
 
 = 0.2 =
 Change of filesystem usage
+
+= 0.3 =
+Changes to support Edge Animate version 1.0, minified files, oam files

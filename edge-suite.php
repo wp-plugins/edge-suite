@@ -331,11 +331,11 @@ function edge_suite_reference_form() {
  *
  * @return string
  */
-function edge_suite_comp_select_form($select_form_id, $selected = '-1', $default_option = TRUE, $none_option = TRUE) {
+function edge_suite_comp_select_form($select_form_id, $selected, $default_option = TRUE, $none_option = TRUE) {
   global $wpdb;
 
-  if ($selected !== 0 && empty($selected)) {
-    $selected = -1;
+  if (empty($selected)) {
+    $selected = 0;
   }
 
   // Get all compositions.
