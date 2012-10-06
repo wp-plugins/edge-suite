@@ -218,12 +218,15 @@ function edge_suite_comp_delete_definition($definition_id) {
  * @return array
  *   Array with stage content and header scripts.
  */
-function edge_suite_comp_render($definition_id) {
+function edge_suite_comp_render($definition_id, $styles = '') {
   $scripts = array();
   $stage = '';
   if ($definition_id > 0) {
-
     $definition = edge_suite_comp_load_definition($definition_id);
+
+    if(!isset($definition->project_name)){
+      return null;
+    }
 
     $edge_lib_path = EDGE_SUITE_PUBLIC_DIR_REL;
     $project_path = EDGE_SUITE_COMP_PROJECT_DIR_REL . '/' . $definition->project_name_unique;
@@ -257,7 +260,7 @@ function edge_suite_comp_render($definition_id) {
     }
 
     // Put everything together.
-    $stage = '<div id="' . $div_id . '" style="' . $height . $width . '" class="' . $definition->composition_id . '">' . '</div>';
+    $stage = '<div id="' . $div_id . '" style="' . $height . $width . $styles . '" class="' . $definition->composition_id . '">' . '</div>';
 
   }
 

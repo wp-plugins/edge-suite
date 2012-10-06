@@ -47,6 +47,17 @@
       </tr>
 
       <tr valign="top">
+          <th scope="row">Widget shortcode</th>
+          <td>
+            <?php
+            $selected = intval(get_option('edge_suite_widget_shortcode')) == 1 ? 'checked="checked"' : '';
+            ?>
+            <p><input type="checkbox" name="edge_suite_widget_shortcode" value="1" <?php echo $selected; ?>"/>
+                Enable usage of shortcodes in widgets</p>
+          </td>
+      </tr>
+
+      <tr valign="top">
           <th scope="row">Deactivation deletion</th>
           <td>
             <?php

@@ -88,6 +88,7 @@ function edge_suite_install() {
   add_option('edge_suite_comp_default', -1);
   add_option('edge_suite_comp_homepage', 0);
   add_option('edge_suite_deactivation_delete', 0);
+  add_option('edge_suite_widget_shortcode', 0);
 
   // Create main edge suite directory.
   mkdir_recursive(trailingslashit(EDGE_SUITE_PUBLIC_DIR));
@@ -114,6 +115,7 @@ function edge_suite_uninstall() {
     delete_option('edge_suite_comp_default');
     delete_option('edge_suite_comp_homepage');
     delete_option('edge_suite_deactivation_delete');
+    delete_option('edge_suite_widget_shortcode');
   }
 }
 
@@ -129,6 +131,7 @@ function edge_suite_options_init() {
   register_setting('edge_suite_options', 'edge_suite_comp_default');
   register_setting('edge_suite_options', 'edge_suite_comp_homepage');
   register_setting('edge_suite_options', 'edge_suite_deactivation_delete');
+  register_setting('edge_suite_options', 'edge_suite_widget_shortcode');
 }
 
 add_action('admin_init', 'edge_suite_options_init');
@@ -343,7 +346,7 @@ function edge_suite_comp_select_form($select_form_id, $selected, $default_option
   $definitions = $wpdb->get_results('SELECT * FROM ' . $table_name);
   $options = array();
   foreach ($definitions as $definition) {
-    $options[$definition->definition_id] = $definition->project_name . ' ' . $definition->composition_id;
+    $options[$definition->definition_id] = $definition->definition_id . ' - ' . $definition->project_name . ' ' . $definition->composition_id;
   }
 
   $form = '';
@@ -366,3 +369,52 @@ function edge_suite_comp_select_form($select_form_id, $selected, $default_option
   return $form;
 }
 
+/**
+ * Shortcode implementation for 'edge_animation'
+ */
+function edge_suite_shortcode_edge_animation( $atts ) {
+  $id = -1;
+  extract( shortcode_atts( array(
+    'id' => '-1',
+    'left' => null,
+    'top' => null,
+  ), $atts ) );
+
+  $styles = '';
+
+  // Add left position offset to style.
+  if(isset($left)){
+    if($left == 'auto'){
+      $styles .= 'margin: 0px auto;';
+    }
+    else if(intval($left) != 0){
+      $styles .= 'margin-left:' . $left . 'px;';
+    }
+  }
+
+  //Add top position offset to style.
+  if(isset($top) && intval($top) != 0){
+    $styles .= 'margin-top:' . $top . 'px;';
+  }
+
+  $definition_id = $id;
+  $definition_res = edge_suite_comp_render($definition_id, $styles);
+
+  $stage = $scripts = '';
+
+  if($definition_res != NULL){
+    // Todo: Placing scripts inline in the content really isn't pretty, but so far there
+    // doesn't seem to be an easy way around this, otherwise we need to handle shortcode
+    // before header fuctions get called.
+    $scripts = implode("\n", $definition_res['scripts']);
+
+    $stage = $definition_res['stage'];
+  }
+
+  return "\n" . $scripts . "\n" . $stage ."\n";
+
+}
+add_shortcode('edge_animation', 'edge_suite_shortcode_edge_animation');
+if(get_option('edge_suite_widget_shortcode') == 1){
+  add_filter('widget_text', 'do_shortcode');
+}
