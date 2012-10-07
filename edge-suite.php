@@ -201,7 +201,9 @@ add_action('wp', 'edge_suite_init');
  */
 function edge_suite_header() {
   global $edge_suite;
-  print "\n" . implode("\n", $edge_suite->scripts) . "\n";
+  if(isset($edge_suite->scripts) && is_array($edge_suite->scripts)){
+    print "\n" . implode("\n", $edge_suite->scripts) . "\n";
+  }
 }
 
 add_action("wp_head", 'edge_suite_header');
@@ -415,6 +417,8 @@ function edge_suite_shortcode_edge_animation( $atts ) {
 
 }
 add_shortcode('edge_animation', 'edge_suite_shortcode_edge_animation');
+
+// Enable widget shortcut support if configured
 if(get_option('edge_suite_widget_shortcode') == 1){
   add_filter('widget_text', 'do_shortcode');
 }
