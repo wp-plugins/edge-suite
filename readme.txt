@@ -33,7 +33,12 @@ Please help to review and test the plugin. Feedback is appreciated.
 
 == Frequently Asked Questions ==
 
+= General things to check when problems occur =
+
+* Open the debug console in Chrome (mac: alt + cmd + j) or Firefox and check for JavaScript errors.
+
 = Animations don't show up =
+
 Uploading worked but nothings shows up on the page. Things to check:
 
 * Edge Suite doesn't support minified/published projects yet. Just zip the raw project folder (without the publish folder)
@@ -45,8 +50,6 @@ Uploading worked but nothings shows up on the page. Things to check:
 * "_preloader" - You should find a script tag, if so JS inclusion went fine.
 
 * If "stage" or "_preloader" are not found, disable other plugins for testing to check if they might interferer.
-
-* Open the debug console in Chrome (mac: alt + cmd + j) or Firefox and check for JavaScript errors.
 
 * For testing remove all other fancy JavaScript like galleries, slideshows, etc. that are placed alongside the animation, the JS might collide.
 
@@ -66,16 +69,25 @@ zip.so needs to be installed as a PHP library
 1. Install the Edge Suite plugin as any other wordpress plugin.
 1. Make sure /wp-content/uploads/edge_suite was created and is writable.
 1. Backup your complete theme folder.
-1. Find the header.php file in your theme.
-1. Insert the following snippet in the header section where the compositions should appear (inside php tags):
-      if(function_exists('edge_suite_view')){echo edge_suite_view();}	
-	
-1.  Placing the code within in a link tag (<a href=""...) can cause problems when the composition is interactive.
-1.  You might also want to remove code that places other header images e.g. calls to header_image() or get_header_image() in case the composition should be the only thing in the header.
 1. Publish your project in Adobe Edge with option "Animate Deployment Package". It will generate a single OAM file.
 1. Go to "Edge Suite > Manage", select the oam file and upload it.
 1. Upload as many composition as you want.
 1. After uploading, the compositions can be placed in multiple ways on the website:
+1. Shortcodes:
+    * Take a look at the manage page drop down and remember the id of the composition you want to integrate. E.g. for "3 - My first edge compositions" the id is 3.
+    * Edit a page and include [edge_animation id="3"] where 3 is of course your composition id.
+    * Save the post, the composition shows up.
+    * You can also use [edge_animation id="3" left="auto"] to center the stage on the page.
+    * If you want to define a pixel base left an top offset of e.g. 10px from the left and 20px from the top, try [edge_animation id="3" left="10" top="20"]
+1. Template based:
+    * Here you insert a PHP snippet in your theme files:
+    * Find e.g. the header.php file in your theme.
+    * Insert the following snippet where the compositions should appear (inside php tags):
+
+      if(function_exists('edge_suite_view')){echo edge_suite_view();}
+
+    * Placing the code within in a link tag (<a href=""...) can cause problems when the composition is interactive.
+    * You now have three options to tell wordpress which composition to show where the PHP snippet was placed.
     * Default: A composition that should be shown on all pages can be selected on the "Edge Suite > settings" page under "Default composition".
     * Homepage: A composition that is only meant to show up on the homepage can also be selected there.
     * Page/Post: In editing mode each post or a page has a composition selection that, when chosen, will overwrite the default composition.
