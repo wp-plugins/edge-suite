@@ -225,7 +225,7 @@ function edge_suite_comp_render($definition_id, $styles = '') {
     $definition = edge_suite_comp_load_definition($definition_id);
 
     if(!isset($definition->project_name)){
-      return null;
+      return NULL;
     }
 
     $edge_lib_path = EDGE_SUITE_PUBLIC_DIR_REL;
@@ -267,3 +267,64 @@ function edge_suite_comp_render($definition_id, $styles = '') {
   return array('scripts' => $scripts, 'stage' => $stage);
 }
 
+
+/**
+ * Renders an iframe with the according callback url
+ *
+ * @param $definition_id Id of the composition definition to be viewed
+ * @param string $css_iframe_style CSS styles that will be added to the iframe
+ * @return string HTML for the iframe with the specific composition url
+ */
+function edge_suite_comp_iframe($definition_id, $css_iframe_style = '') {
+    $frame = '';
+    if ($definition_id > 0) {
+      $definition = edge_suite_comp_load_definition($definition_id);
+
+      $url = get_bloginfo('wpurl') . '/' . 'index.php?edge_suite_iframe=' . $definition_id;
+      // Get dimensions and set iframe.
+      $width = isset($definition->info->width) ? $definition->info->width : 0;
+      $height = isset($definition->info->height) ? $definition->info->height : 0;
+      $style = 'style="width:' . $width . ';height:' . $height . ';' . $css_iframe_style . '" ';
+      $style .= 'scrolling="no" marginheight="0" marginwidth="0" frameborder="0"';
+      $frame = '<iframe src="' . $url . '" name="composition-' . $definition_id . '" ' . $style . '></iframe> ';
+    }
+    return $frame;
+}
+
+/**
+ * Renders a full HTML page for the given definition id.
+ *
+ * @param integer definition id of the composition to render.
+ *
+ * @return string
+ *   Returns the full HTML document, ready to be printed.
+ *
+ */
+function edge_suite_comp_full_page($definition_id) {
+
+  $html = NULL;
+
+  // Render composition instance.
+  $content = edge_suite_comp_render($definition_id);
+  if($content != NULL){
+    // Output full HTML structure.
+    if(isset($content['scripts']) && is_array($content['scripts']) && !empty($content['stage'])){
+      $scripts =  implode("\n", $content['scripts']);
+      $stage = $content['stage'];
+      $html =
+<<<HTML
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    $scripts
+  </head>
+  <body>
+      $stage
+  </body>
+</html>
+HTML;
+    }
+  }
+  return $html;
+}

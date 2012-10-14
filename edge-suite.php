@@ -378,10 +378,12 @@ function edge_suite_shortcode_edge_animation( $atts ) {
   $id = -1;
   extract( shortcode_atts( array(
     'id' => '-1',
-    'left' => null,
-    'top' => null,
+    'left' => NULL,
+    'top' => NULL,
+    'iframe' => FALSE,
   ), $atts ) );
 
+  // The styles that will be added to the stage div inline or to the iframe
   $styles = '';
 
   // Add left position offset to style.
@@ -400,20 +402,28 @@ function edge_suite_shortcode_edge_animation( $atts ) {
   }
 
   $definition_id = $id;
-  $definition_res = edge_suite_comp_render($definition_id, $styles);
 
-  $stage = $scripts = '';
-
-  if($definition_res != NULL){
-    // Todo: Placing scripts inline in the content really isn't pretty, but so far there
-    // doesn't seem to be an easy way around this, otherwise we need to handle shortcode
-    // before header fuctions get called.
-    $scripts = implode("\n", $definition_res['scripts']);
-
-    $stage = $definition_res['stage'];
+  // iframe rendering
+  if(isset($iframe) && $iframe){
+    return edge_suite_comp_iframe($definition_id, $styles);
   }
+  // Inline rendering
+  else{
+    $definition_res = edge_suite_comp_render($definition_id, $styles);
 
-  return "\n" . $scripts . "\n" . $stage ."\n";
+    $stage = $scripts = '';
+
+    if($definition_res != NULL){
+      // Todo: Placing scripts inline in the content really isn't pretty, but so far there
+      // doesn't seem to be an easy way around this, otherwise we need to handle shortcode
+      // before header fuctions get called.
+      $scripts = implode("\n", $definition_res['scripts']);
+
+      $stage = $definition_res['stage'];
+    }
+
+    return "\n" . $scripts . "\n" . $stage ."\n";
+  }
 
 }
 add_shortcode('edge_animation', 'edge_suite_shortcode_edge_animation');
@@ -422,3 +432,34 @@ add_shortcode('edge_animation', 'edge_suite_shortcode_edge_animation');
 if(get_option('edge_suite_widget_shortcode') == 1){
   add_filter('widget_text', 'do_shortcode');
 }
+
+/**
+ * Callback to check and deliver a plain composition to view within an iframe
+ */
+function edge_suite_iframe_callback(){
+  // Todo: make configurable?
+  $check_referer = TRUE;
+
+  // Check if compoistion id GET parameter is set
+  // Todo: allow for admins so composition can be tested?
+  if(isset($_GET['edge_suite_iframe']) && intval($_GET['edge_suite_iframe']) > 0){
+    if($check_referer){
+      $site_url = get_bloginfo('wpurl');
+      if (!isset($_SERVER['HTTP_REFERER']) || substr($_SERVER['HTTP_REFERER'], 0, strlen($site_url)) != $site_url) {
+        exit;
+      }
+    }
+
+    // Todo: check permissions for the user to view the compositions?
+    $definition_id = intval($_REQUEST['edge_suite_iframe']);
+    // Get composition
+    $content = edge_suite_comp_full_page($definition_id);
+    if(!empty($content)){
+      // Deliver composition content and exit
+      header('Content-Type: text/html; charset=utf-8');
+      print $content;
+      exit;
+    }
+  };
+}
+add_action( 'template_redirect', 'edge_suite_iframe_callback' );
