@@ -3,7 +3,7 @@ Contributors: ti2m
 Tags: media, animation, interactive, adobe edge animate, edge animate, edge, embed, integration
 Requires at least: 4.3
 Tested up to: 4.3
-Stable tag: /trunk/
+Stable tag: 0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
