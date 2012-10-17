@@ -81,6 +81,12 @@ function unzip($file, $to){
     require_once(ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php');
     $filesystem = new WP_Filesystem_Direct(null);
 
+    // Set up default file/folder permissions (copied from WP_Filesystem()).
+    if ( ! defined('FS_CHMOD_DIR') )
+      define('FS_CHMOD_DIR', 0755 );
+    if ( ! defined('FS_CHMOD_FILE') )
+      define('FS_CHMOD_FILE', 0644 );
+
     $z = new ZipArchive();
 
     // PHP4-compat - php4 classes can't contain constants

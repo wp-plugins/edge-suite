@@ -400,7 +400,19 @@ class EdgeCompositionBuilder {
    */
   protected function alterMainEdgeJs() {
     $file = $this->mainEdgeJS;
+    // Do an extensive file / permission check as this seems to fail with many server configs.
+    if(!file_exists($file)){
+      throw new Exception('Main edge file ' . $file . ' does not exist.');
+    }
+
+    if(!is_readable($file)){
+      throw new Exception('Main edge file' . $file . ' exists but is not readable.');
+    }
+
     $content = file_get_contents($file);
+    if(!isset($content) || empty($content)){
+      throw new Exception('Main edge file ' . $file . ' does exist, cleared is_readable check, but can not be read.');
+    }
 
     $this->parseDimensions($content);
 
