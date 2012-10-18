@@ -345,7 +345,7 @@ function edge_suite_comp_select_form($select_form_id, $selected, $default_option
 
   // Get all compositions.
   $table_name = $wpdb->prefix . "edge_suite_composition_definition";
-  $definitions = $wpdb->get_results('SELECT * FROM ' . $table_name);
+  $definitions = $wpdb->get_results('SELECT * FROM ' . $table_name . ' ORDER BY definition_id');
   $options = array();
   foreach ($definitions as $definition) {
     $options[$definition->definition_id] = $definition->definition_id . ' - ' . $definition->project_name . ' ' . $definition->composition_id;
