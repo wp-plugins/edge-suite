@@ -149,11 +149,6 @@ function edge_suite_boot() {
 
   edge_suite_init_constants();
 
-  //Check if dir is writable and create directory structure.
-  if (!mkdir_recursive(EDGE_SUITE_COMP_PROJECT_DIR)) {
-    print sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?'), EDGE_SUITE_COMP_PROJECT_DIR_REL);
-  }
-
 }
 
 /**

@@ -66,7 +66,7 @@ function edge_suite_process_upload() {
         throw new Exception("Edge suite tmp could not be created.<br />");
       }
     }
-    if(!dir_is_writable(EDGE_SUITE_PUBLIC_DIR . '/tmp')){
+    if(!dir_is_writable(EDGE_SUITE_PUBLIC_DIR . '/tmp/')){
       throw new Exception("Edge suite tmp is not writable.<br />");
     }
 

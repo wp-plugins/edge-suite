@@ -33,8 +33,20 @@ function fs_connect( $directories = array() ) {
 
 function check_filesystem(){
   $msg = array();
+
+  //Check if dir is writable and create directory structure.
+  if (!mkdir_recursive(EDGE_SUITE_COMP_PROJECT_DIR)) {
+    $msg['create_folder'] = 'Edge Suite: Unable to create directory project directory (' . EDGE_SUITE_COMP_PROJECT_DIR . '). Is its parent directory writable by the server?';
+  }
+
+
   if(!class_exists('ZipArchive')){
     $msg['zip'] = 'Your server is not able to extract zip files (PHP Class "ZipArchive" not found).';
+  }
+
+
+  if( ini_get('safe_mode') ){
+    $msg['safemode'] = "PHP is running in safe mode, uploading compositions will not work.";
   }
 
   // Check file system method
@@ -156,7 +168,7 @@ function mkdir_recursive($path){
     return true;
   }
   else{
-    return $path . " could not be created.";
+    return false;
   }
 }
 
