@@ -35,13 +35,23 @@
         </td>
       </tr>
 
+      <?php
+        $server_post_size =  ini_get('post_max_size');
+        $server_upload_size =  ini_get('upload_max_filesize');
+        $server_max_size = $server_post_size < $server_upload_size ? $server_post_size : $server_upload_size;
+
+        $file_size_hint = 'Your server supports files up to ' . $server_max_size;
+        $file_size_hint .= ' (post_max_size: ' . $server_post_size . ' / upload_max_filesize: ' . $server_max_size . ').';
+      ?>
       <tr valign="top">
           <th scope="row">Max upload file size</th>
           <td>
               <input type="text" name="edge_suite_max_size"
                      value="<?php echo intval(get_option('edge_suite_max_size')); ?>"/>
         <span class="setting-description">
-          File size in MB<br/>This is the max size that your file uploads will be limited to. 2 MB is the default upload size.
+          File size in MB<br/>
+            This is the max size that your file uploads will be limited to. 2 MB is the default upload size.<br>
+            <?php print $file_size_hint; ?>
         </span>
           </td>
       </tr>
