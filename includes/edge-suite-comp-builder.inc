@@ -552,6 +552,13 @@ class EdgeCompositionBuilder {
     $load_replace = 'AdobeEdge.alterPreloadPaths(compId, aLoader, doDelayLoad, loadResources);';
     $content = preg_replace($load_pattern, $load_replace, $content);
 
+    // Search for the okToLaunchComposition function call.
+    $launch_pattern = '/AdobeEdge\.okToLaunchComposition\(compId\)/';
+
+    // Replace original call with call to custom function, alters jQuery.
+    $launch_replace = 'AdobeEdge.alterOkToLaunchComposition(compId)';
+    $content = preg_replace($launch_pattern, $launch_replace, $content);
+
     // Find the end of the main JS function and inject to function calls to
     // alter preContent and dlContent DOM, see JS function doc.
     // Expected structure (might be minified).

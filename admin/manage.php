@@ -8,11 +8,13 @@ if (!current_user_can('edge_suite_administer')) {
   wp_die(__('You are not allowed to administer Edge Suite.', 'edge_suite'));
 }
 
-if ($_POST['action'] == 'upload' && $_POST['upit'] == 'yes') {
-  edge_suite_process_upload();
-}
-elseif ($_POST['action'] == 'delete') {
-  edge_suite_process_delete();
+if(isset($_POST['action'])){
+  if ($_POST['action'] == 'upload' && isset($_POST['upit']) && $_POST['upit'] == 'yes') {
+    edge_suite_process_upload();
+  }
+  elseif ($_POST['action'] == 'delete') {
+    edge_suite_process_delete();
+  }
 }
 
 

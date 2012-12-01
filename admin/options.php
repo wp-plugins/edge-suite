@@ -68,6 +68,32 @@
       </tr>
 
       <tr valign="top">
+          <th scope="row">jQuery NoConflict mode (experimental)</th>
+          <td>
+            <?php
+            $selected = intval(get_option('edge_suite_jquery_noconflict')) == 1 ? 'checked="checked"' : '';
+            ?>
+            <p><input type="checkbox" name="edge_suite_jquery_noconflict" value="1" <?php echo $selected; ?>"/>
+                Run a separate instance of jQuery for Edge Animate.</p>
+            <span class="setting-description">
+                Activate this option if you experience problems with other jQuery-based JavaScript plugins.
+                Edge Suite will initialize separate different jQuery versions.
+            </span>
+          </td>
+      </tr>
+
+      <tr valign="top">
+          <th scope="row">Edge Suite debug mode</th>
+          <td>
+            <?php
+            $selected = intval(get_option('edge_suite_debug')) == 1 ? 'checked="checked"' : '';
+            ?>
+            <p><input type="checkbox" name="edge_suite_debug" value="1" <?php echo $selected; ?>"/>
+                Run Edge Suite in debug mode</p>
+          </td>
+      </tr>
+
+      <tr valign="top">
           <th scope="row">Deactivation deletion</th>
           <td>
             <?php

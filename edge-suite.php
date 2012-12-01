@@ -89,6 +89,8 @@ function edge_suite_install() {
   add_option('edge_suite_comp_homepage', 0);
   add_option('edge_suite_deactivation_delete', 0);
   add_option('edge_suite_widget_shortcode', 0);
+  add_option('edge_suite_jquery_noconflict', 0);
+  add_option('edge_suite_debug', 0);
 
   // Create main edge suite directory.
   mkdir_recursive(trailingslashit(EDGE_SUITE_PUBLIC_DIR));
@@ -116,6 +118,8 @@ function edge_suite_uninstall() {
     delete_option('edge_suite_comp_homepage');
     delete_option('edge_suite_deactivation_delete');
     delete_option('edge_suite_widget_shortcode');
+    delete_option('edge_suite_jquery_noconflict');
+    delete_option('edge_suite_debug');
   }
 }
 
@@ -132,6 +136,8 @@ function edge_suite_options_init() {
   register_setting('edge_suite_options', 'edge_suite_comp_homepage');
   register_setting('edge_suite_options', 'edge_suite_deactivation_delete');
   register_setting('edge_suite_options', 'edge_suite_widget_shortcode');
+  register_setting('edge_suite_options', 'edge_suite_jquery_noconflict');
+  register_setting('edge_suite_options', 'edge_suite_debug');
 }
 
 add_action('admin_init', 'edge_suite_options_init');
@@ -196,6 +202,7 @@ add_action('wp', 'edge_suite_init');
  */
 function edge_suite_header() {
   global $edge_suite;
+  //TODO: use wp_enqueue_script()
   if(isset($edge_suite->scripts) && is_array($edge_suite->scripts)){
     print "\n" . implode("\n", $edge_suite->scripts) . "\n";
   }
@@ -283,7 +290,7 @@ add_action('admin_menu', 'edge_suite_add_box');
  *   Id of the post/page
  */
 function edge_suite_save_post_reference($id) {
-  if (current_user_can('edge_suite_select_composition')) {
+  if (current_user_can('edge_suite_select_composition') && isset($_POST['edge_suite_composition'])) {
     $definition_id = intval($_POST['edge_suite_composition']);
     if ($definition_id != 0) {
       //    add_post_meta($id, '_edge_composition', $definition_id, true) ||
@@ -366,6 +373,25 @@ function edge_suite_comp_select_form($select_form_id, $selected, $default_option
   return $form;
 }
 
+function edge_suite_comp_view_iframe($definition_id, $css_style = ''){
+  return edge_suite_comp_iframe($definition_id, $css_style);
+}
+
+function edge_suite_comp_view_inline($definition_id, $css_style = ''){
+
+  $definition_res = edge_suite_comp_render($definition_id, $css_style);
+
+  $stage = $scripts = '';
+
+  if($definition_res != NULL){
+    $scripts = implode("\n", $definition_res['scripts']);
+    $stage = $definition_res['stage'];
+  }
+
+  return "\n" . $scripts . "\n" . $stage ."\n";
+}
+
+
 /**
  * Shortcode implementation for 'edge_animation'
  */
@@ -404,20 +430,7 @@ function edge_suite_shortcode_edge_animation( $atts ) {
   }
   // Inline rendering
   else{
-    $definition_res = edge_suite_comp_render($definition_id, $styles);
-
-    $stage = $scripts = '';
-
-    if($definition_res != NULL){
-      // Todo: Placing scripts inline in the content really isn't pretty, but so far there
-      // doesn't seem to be an easy way around this, otherwise we need to handle shortcode
-      // before header fuctions get called.
-      $scripts = implode("\n", $definition_res['scripts']);
-
-      $stage = $definition_res['stage'];
-    }
-
-    return "\n" . $scripts . "\n" . $stage ."\n";
+    return edge_suite_comp_view_inline($definition_id, $styles);
   }
 
 }

@@ -158,11 +158,45 @@ AdobeEdge.alterPreloadPaths = function (compId, aLoader, doDelayLoad, loadResour
     }
   }
 
-//  for(var i in AdobeEdge.thirdPartyLibs) {
-//    aLoader.push({load: AdobeEdge.thirdPartyLibs[i]});
-//  }
+  // Check if other jQuery version exist prior to the preloader run
+  if(typeof jQuery != 'undefined'){
+      if(!AdobeEdge.otherjQuery){
+          AdobeEdge.edgesuiteLogger('Other jQuery include exists: Version ' + jQuery().jquery);
+          if(AdobeEdge.edgesuiteNoConflict){
+              AdobeEdge.otherjQuery = jQuery;
+          }
+      }
+  }
+  else{
+      AdobeEdge.edgesuiteLogger('No other jQuery exists yet.');
+  }
 
   // Call the original loader with the modified aLoader object.
   loadResources(aLoader, doDelayLoad);
 }
 
+window.jQueryEdge = window.jQueryEdge || null;
+AdobeEdge.alterOkToLaunchComposition = function(comp){
+    if(AdobeEdge.edgesuiteNoConflict && typeof jQueryEdge != 'undefined'){
+        AdobeEdge.edgesuiteLogger("Init 'edgejQuery' with: Version " + jQuery().jquery);
+        jQueryEdge = jQuery;
+        // AdobeEdge.edgesuiteLogger('jQuery NoConflict');
+        // jQuery.noConflict(true);
+        if(AdobeEdge.otherjQuery){
+            jQuery = AdobeEdge.otherjQuery;
+            AdobeEdge.edgesuiteLogger("Reset 'jQuery' to: Version " + jQuery().jquery);
+        }
+    }
+
+    // Fire composition launch
+    AdobeEdge.okToLaunchComposition(comp);
+}
+
+AdobeEdge.edgesuiteLogger = function(msg, level){
+    if(!level){
+        level = 'Info';
+    }
+    if(AdobeEdge.edgesuiteDebug){
+        console.log('[ DEBUG | EdgeSuite | ' + level + ']: ' + msg);
+    }
+}

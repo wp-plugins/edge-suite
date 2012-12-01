@@ -36,7 +36,7 @@ function check_filesystem(){
 
   //Check if dir is writable and create directory structure.
   if (!mkdir_recursive(EDGE_SUITE_COMP_PROJECT_DIR)) {
-    $msg['create_folder'] = 'Edge Suite: Unable to create directory project directory (' . EDGE_SUITE_COMP_PROJECT_DIR . '). Is its parent directory writable by the server?';
+    $msg['create_folder'] = 'Edge Suite: Unable to create project directory (' . EDGE_SUITE_COMP_PROJECT_DIR . '). Is its parent directory writable by the server?';
   }
 
 

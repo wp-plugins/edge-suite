@@ -239,6 +239,14 @@ function edge_suite_comp_render($definition_id, $styles = '') {
     $js_inline .= "AdobeEdge.pathPrefix.comps = AdobeEdge.pathPrefix.comps || {};";
     $js_inline .= "AdobeEdge.pathPrefix.comps['" . $definition->composition_id . "'] = '" . $project_path . "';";
 
+    if(get_option('edge_suite_debug') == 1){
+      $js_inline .= "AdobeEdge.edgesuiteDebug = 1;";
+    }
+
+    if(get_option('edge_suite_jquery_noconflict') == 1){
+      $js_inline .= "AdobeEdge.edgesuiteNoConflict = 1;";
+    }
+
     $scripts = array();
     $scripts[] = '<script type="text/javascript">' . $js_inline . '</script>';
     $scripts[] = '<script type="text/javascript" src="' . plugins_url('/edge-suite') . '/includes/edge-wordpress.js"></script>';
