@@ -161,10 +161,8 @@ AdobeEdge.alterPreloadPaths = function (compId, aLoader, doDelayLoad, loadResour
   // Check if other jQuery version exist prior to the preloader run
   if(typeof jQuery != 'undefined'){
       if(!AdobeEdge.otherjQuery){
+          AdobeEdge.otherjQuery = true;
           AdobeEdge.edgesuiteLogger('Other jQuery include exists: Version ' + jQuery().jquery);
-          if(AdobeEdge.edgesuiteNoConflict){
-              AdobeEdge.otherjQuery = jQuery;
-          }
       }
   }
   else{
@@ -177,15 +175,10 @@ AdobeEdge.alterPreloadPaths = function (compId, aLoader, doDelayLoad, loadResour
 
 window.jQueryEdge = window.jQueryEdge || null;
 AdobeEdge.alterOkToLaunchComposition = function(comp){
-    if(AdobeEdge.edgesuiteNoConflict && typeof jQueryEdge != 'undefined'){
+    if(AdobeEdge.otherjQuery && AdobeEdge.edgesuiteNoConflict && jQueryEdge == null){
         AdobeEdge.edgesuiteLogger("Init 'edgejQuery' with: Version " + jQuery().jquery);
-        jQueryEdge = jQuery;
-        // AdobeEdge.edgesuiteLogger('jQuery NoConflict');
-        // jQuery.noConflict(true);
-        if(AdobeEdge.otherjQuery){
-            jQuery = AdobeEdge.otherjQuery;
-            AdobeEdge.edgesuiteLogger("Reset 'jQuery' to: Version " + jQuery().jquery);
-        }
+        jQueryEdge = jQuery.noConflict(true);
+        AdobeEdge.edgesuiteLogger("Reset 'jQuery' to: Version " + jQuery().jquery);
     }
 
     // Fire composition launch
