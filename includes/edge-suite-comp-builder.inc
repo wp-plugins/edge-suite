@@ -471,7 +471,7 @@ class EdgeCompositionBuilder {
       $stage_variable = $stage_variable_match[1];
 
       // Find property function calls for stage variable.
-      $pattern_stage_style = '/;A1.A\(' . $stage_variable . '\)(\.P\([a-z0-9,%"_]+\))*;/i';
+      $pattern_stage_style = '/;A1.A\(' . $stage_variable . '\)(\.[PT]\([a-z0-9,%"_\.]+\))*;/i';
       $matches = array();
       if (preg_match($pattern_stage_style, $content, $matches)) {
         $properties = array();
