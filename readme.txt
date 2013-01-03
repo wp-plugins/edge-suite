@@ -17,7 +17,7 @@ Upload of compositions through published OAM files. Integrate Adobe Edge Animate
 A detailed tutorial on how to install and use Edge Suite is available <a href="http://edgedocks.com/content/edge-suite-integrate-edge-animate-wordpress">here</a>. More resources can be found
 at <a href="http://edgedocks.com/edge_suite_wp">EdgeDocks.com</a>.
 
-The plugin has been tested by various users over the last couple of month and seems to be rather stable, it is up to you though if you want to try and use it in production. If you experience
+The plugin has been intensively tested over the last couple of months and seems to be rather stable, it is up to you though if you want to try and use it in production. If you experience
 any problems please open an issue in the support section. If you like the plugin please vote for it and let us know that it works for your wordpress version.
 
 == Features ==
