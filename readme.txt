@@ -12,24 +12,20 @@ Manage and view your Adobe Edge Animate compositions on your website.
 
 == Description ==
 
-Upload of compositions through a zipped archive. Integrate Adobe Edge Animate compositions seamlessly into your website.
+Upload of compositions through published OAM files. Integrate Adobe Edge Animate compositions seamlessly into your website.
 
-Since Edge Animate itself is still in pre-release this plugin is a moving target as well and should therefore not yet be used in production.
+A detailed tutorial on how to install and use Edge Suite is available <a href="http://edgedocks.com/content/edge-suite-integrate-edge-animate-wordpress">here</a>. More resources can be found
+at <a href="http://edgedocks.com/edge_suite_wp">EdgeDocks.com</a>.
 
-There have been problems with unzipping composition archives on shared hosting plans due to the wordpress filesystem. More detailed info is available in the FAQ section.
-
-Roadmap: FTP Filesystem support, data injection
-
-Please help to review and test the plugin. Feedback is appreciated.
-
-<a href="http://edgedocks.com/content/edge-suite-integrate-edge-animate-wordpress">Tutorial</a> on how to install and use Edge Suite. More resources can be found
-<a href="http://edgedocks.com/edge_suite_wp">EdgeDocks.com</a>.
+The plugin has been tested by various users over the last couple of month and seems to be rather stable, it is up to you though if you want to try and use it in production. If you experience
+any problems please open an issue in the support section. If you like the plugin please vote for it and let us know that it works for your wordpress version.
 
 == Features ==
 
-* Upload Edge Animate compositions within one zipped archive
+* Upload Edge Animate compositions through published OAM files
 * Manage all compositions
 * Easy placement of compositions on the website
+* Shortcode support for posts and widgets
 
 == Frequently Asked Questions ==
 
@@ -41,8 +37,6 @@ Please help to review and test the plugin. Feedback is appreciated.
 
 Uploading worked but nothings shows up on the page. Things to check:
 
-* Edge Suite doesn't support minified/published projects yet. Just zip the raw project folder (without the publish folder)
-
 * Look at the source code of the page and search for:
 
 * "stage" - You should find a div container, if so HTML rendering went fine.
@@ -52,6 +46,10 @@ Uploading worked but nothings shows up on the page. Things to check:
 * If "stage" or "_preloader" are not found, disable other plugins for testing to check if they might interferer.
 
 * For testing remove all other fancy JavaScript like galleries, slideshows, etc. that are placed alongside the animation, the JS might collide.
+
+* Enable the JS debug log in the settings
+
+* Enable jQuery no-conflict mode in the settings
 
 = Head Cleaner: Animations don't show up =
 
