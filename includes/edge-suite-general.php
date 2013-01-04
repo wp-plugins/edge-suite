@@ -144,21 +144,25 @@ function unzip($file, $to){
 function file_scan_directory($dir, $pattern) {
   $files = list_files($dir);
   $matching_files = array();
-  foreach ($files as $file) {
-    if (preg_match($pattern, $file)) {
-      $matching_files[] = $file;
+  if($files !== FALSE){
+    foreach ($files as $file) {
+      if (preg_match($pattern, $file)) {
+        $matching_files[] = $file;
+      }
     }
   }
   return $matching_files;
 }
 
 function rmdir_recursive($dir) {
-  //global $wp_filesystem;
-  foreach(glob($dir . '/*') as $file) {
-    if(@is_dir($file))
-      rmdir_recursive($file);
-    else
-      @unlink($file);
+  $files = glob($dir . '/*');
+  if($files !== FALSE){
+    foreach($files as $file) {
+      if(@is_dir($file))
+        rmdir_recursive($file);
+      else
+        @unlink($file);
+    }
   }
   @rmdir($dir);
 }
