@@ -12,24 +12,26 @@ Manage and view your Adobe Edge Animate compositions on your website.
 
 == Description ==
 
-Upload of compositions through a zipped archive. Integrate Adobe Edge Animate compositions seamlessly into your website.
+Upload of compositions through published OAM files. Integrate Adobe Edge Animate compositions seamlessly into your website.
 
-Since Edge Animate itself is still in pre-release this plugin is a moving target as well and should therefore not yet be used in production.
+Detailed tutorials on how to install and use Edge Suite can be found is here:
 
-There have been problems with unzipping composition archives on shared hosting plans due to the wordpress filesystem. More detailed info is available in the FAQ section.
+* <a href="http://edgedocks.com/content/edge-suite-integrate-edge-animate-wordpress">Edge Docks - written tutorial</a>
+* <a href="http://edgedocks.com/content/edge-suite-integrate-edge-animate-wordpress">Adobe TV - video tutorial</a>
 
-Roadmap: FTP Filesystem support, data injection
+More resources can be found at <a href="http://edgedocks.com/edge_suite_wp">EdgeDocks.com</a>.
 
-Please help to review and test the plugin. Feedback is appreciated.
-
-<a href="http://edgedocks.com/content/edge-suite-integrate-edge-animate-wordpress">Tutorial</a> on how to install and use Edge Suite. More resources can be found
-<a href="http://edgedocks.com/edge_suite_wp">EdgeDocks.com</a>.
+The plugin has been intensively tested over the last couple of months and seems to be rather stable, it is up to you though if you want to try and use it in production. If you experience
+any problems please open an issue in the support section. If you like the plugin please vote for it and let us know that it works for your wordpress version.
 
 == Features ==
 
-* Upload Edge Animate compositions within one zipped archive
+* Upload Edge Animate compositions through published OAM files
 * Manage all compositions
 * Easy placement of compositions on the website
+* Shortcode support for posts and widgets
+* Sharing of resources
+* jQuery no conflict mode
 
 == Frequently Asked Questions ==
 
@@ -37,11 +39,28 @@ Please help to review and test the plugin. Feedback is appreciated.
 
 * Open the debug console in Chrome (mac: alt + cmd + j) or Firefox and check for JavaScript errors.
 
+= jQuery issues =
+
+ Try to enable jQuery no conflict mode in the settings page, this might resolve conflicts between Edge Animates
+ version of jQuery and other plugins.
+
+= Background animation =
+
+If you want to use your composition as a background animation, try the following CSS on your stage id, e.g. #Stage_mycomp
+
+    #Stage_mycomp{
+        position: absolute !important; /* That is not pretty, but no way around it. */
+        top: 0px; /* Aligns the animation with the top of the header (can be removed or changed) */
+        z-index: 5; /* Sets animation as overlay, set to negative value for background placement */
+
+        /* Only use the following if you want to center the animation */
+        left: 50%;
+        margin-left: -346px; /* Half the width of the stage */
+    }
+
 = Animations don't show up =
 
 Uploading worked but nothings shows up on the page. Things to check:
-
-* Edge Suite doesn't support minified/published projects yet. Just zip the raw project folder (without the publish folder)
 
 * Look at the source code of the page and search for:
 
@@ -52,6 +71,10 @@ Uploading worked but nothings shows up on the page. Things to check:
 * If "stage" or "_preloader" are not found, disable other plugins for testing to check if they might interferer.
 
 * For testing remove all other fancy JavaScript like galleries, slideshows, etc. that are placed alongside the animation, the JS might collide.
+
+* Enable the JS debug log in the settings
+
+* Enable jQuery no-conflict mode in the settings
 
 = Head Cleaner: Animations don't show up =
 
@@ -105,3 +128,12 @@ Change of filesystem usage
 
 = 0.3 =
 Changes to support Edge Animate version 1.0, minified files, oam files
+
+= 0.4 =
+Bugfixes
+
+= 0.5 =
+Bugfixes, jQuery no conflict mode, readme update
+
+
+

@@ -318,6 +318,7 @@ class EdgeCompositionBuilder {
       throw new Exception('Could not find archive: ' . $file . '.');
     }
 
+    // Todo: Directory seems to always exist already
     // Delete old edge tmp dir.
     if (is_dir($destination)) {
       rmdir_recursive($destination);

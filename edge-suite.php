@@ -4,11 +4,12 @@ Plugin Name: Edge Suite
 Plugin URI: http://edgedocks.com/edge_suite
 Description: Upload Adobe Edge compositions to your website.
 Author: Timm Jansen
-Author URI: http://timm-jansen.net/
-Version: 0.4
+Author URI: http://www.timmjansen.com/
+Donate link: http://www.timmjansen.com/donate
+Version: 0.5
 */
 
-/*  Copyright 2012 Timm Jansen (email: info at timm-jansen.net)
+/*  Copyright 2013 Timm Jansen (email: info at timmjansen.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -77,14 +78,12 @@ function edge_suite_install() {
         PRIMARY KEY (definition_id)
       );
     ";
-
-    // TODO: Is this the correct way to do this?
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
   }
 
   // Default options.
-  add_option('edge_suite_max_size', 2);
+  add_option('edge_suite_max_size', 5);
   add_option('edge_suite_comp_default', -1);
   add_option('edge_suite_comp_homepage', 0);
   add_option('edge_suite_deactivation_delete', 0);
@@ -100,31 +99,35 @@ register_activation_hook(__FILE__, 'edge_suite_install');
 
 
 function edge_suite_uninstall() {
+  edge_suite_init_constants();
+
+  global $wpdb;
+  $table_name = $wpdb->prefix . "edge_suite_composition_definition";
+  if ($wpdb->get_var("show tables like '$table_name'") == $table_name) {
+    $wpdb->query('DROP TABLE ' . $table_name);
+  }
+
+  // Delete all edge directories
+  rmdir_recursive(trailingslashit(EDGE_SUITE_PUBLIC_DIR));
+
+  // Delete options
+  delete_option('edge_suite_max_size');
+  delete_option('edge_suite_comp_default');
+  delete_option('edge_suite_comp_homepage');
+  delete_option('edge_suite_deactivation_delete');
+  delete_option('edge_suite_widget_shortcode');
+  delete_option('edge_suite_jquery_noconflict');
+  delete_option('edge_suite_debug');
+}
+register_uninstall_hook(__FILE__, 'edge_suite_uninstall');
+
+
+function edge_suite_deactivate() {
   if(get_option('edge_suite_deactivation_delete') == 1){
-    edge_suite_init_constants();
-
-    global $wpdb;
-    $table_name = $wpdb->prefix . "edge_suite_composition_definition";
-    if ($wpdb->get_var("show tables like '$table_name'") == $table_name) {
-      $wpdb->query('DROP TABLE ' . $table_name);
-    }
-
-    // Delete all edge directories
-    rmdir_recursive(trailingslashit(EDGE_SUITE_PUBLIC_DIR));
-
-    // Delete options
-    delete_option('edge_suite_max_size');
-    delete_option('edge_suite_comp_default');
-    delete_option('edge_suite_comp_homepage');
-    delete_option('edge_suite_deactivation_delete');
-    delete_option('edge_suite_widget_shortcode');
-    delete_option('edge_suite_jquery_noconflict');
-    delete_option('edge_suite_debug');
+    edge_suite_uninstall();
   }
 }
-
-register_deactivation_hook(__FILE__, 'edge_suite_uninstall');
-//register_uninstall_hook(__FILE__, 'edge_suite_uninstall');
+register_deactivation_hook(__FILE__, 'edge_suite_deactivate');
 
 
 /**
@@ -163,32 +166,35 @@ function edge_suite_boot() {
 function edge_suite_init() {
   edge_suite_boot();
 
-  // Get default composition.
-  $definition_id = get_option('edge_suite_comp_default');
+  if(!is_admin()){
+    // Get default composition.
+    $definition_id = get_option('edge_suite_comp_default');
 
-  // Get homepage composition.
-  if (is_home()) {
-    if (get_option('edge_suite_comp_homepage') != 0) {
-      $definition_id = get_option('edge_suite_comp_homepage');
+    // Get homepage composition.
+    if (is_home()) {
+      if (get_option('edge_suite_comp_homepage') != 0) {
+        $definition_id = get_option('edge_suite_comp_homepage');
+      }
     }
-  }
-  //Get post composition
-  else {
-    global $post;
-    $post_id = $post->ID;
-    $post_reference_id = get_post_meta($post_id, '_edge_composition', TRUE);
-    if (!empty($post_reference_id)) {
-      $definition_id = $post_reference_id;
+    //Get post composition
+    else {
+      global $post;
+      if(isset($post->ID)){
+        $post_id = $post->ID;
+        $post_reference_id = get_post_meta($post_id, '_edge_composition', TRUE);
+        if (!empty($post_reference_id)) {
+          $definition_id = $post_reference_id;
+        }
+      }
     }
+
+    // Render composition.
+    global $edge_suite;
+    $definition_res = edge_suite_comp_render($definition_id);
+    // Split scripts and stage so they can be used by the respective functions.
+    $edge_suite->scripts = isset($definition_res['scripts']) ? $definition_res['scripts'] : '';
+    $edge_suite->stage = isset($definition_res['stage']) ? $definition_res['stage'] : '';
   }
-
-  // Render composition.
-  global $edge_suite;
-  $definition_res = edge_suite_comp_render($definition_id);
-  // Split scripts and stage so they can be used by the respective functions.
-  $edge_suite->scripts = isset($definition_res['scripts']) ? $definition_res['scripts'] : '';
-  $edge_suite->stage = isset($definition_res['stage']) ? $definition_res['stage'] : '';
-
 }
 
 add_action('wp', 'edge_suite_init');
@@ -225,10 +231,7 @@ function edge_suite_view() {
 /** MENU **/
 
 function edge_suite_menu() {
-  // Todo: Create icon.
-  // $icon_url = plugins_url('/edge-suite').'/admin/edge_icon.png';
-  $icon_url = '';
-  add_menu_page('Edge Suite', 'Edge Suite', 'edge_suite_administer', __FILE__, 'edge_suite_menu_main', $icon_url);
+  add_menu_page('Edge Suite', 'Edge Suite', 'edge_suite_administer', __FILE__, 'edge_suite_menu_main');
   add_submenu_page(__FILE__, 'Manage', 'Manage', 'edge_suite_administer', __FILE__, 'edge_suite_menu_main');
   add_submenu_page(__FILE__, 'Settings', 'Settings', 'edge_suite_administer', 'edge_suite_menu_settings', 'edge_suite_menu_settings');
   add_submenu_page(__FILE__, 'Usage', 'Usage', 'edge_suite_administer', 'edge_suite_menu_usage', 'edge_suite_menu_usage');
