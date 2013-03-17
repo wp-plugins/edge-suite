@@ -46,9 +46,9 @@ AdobeEdge.alterRegisterCompositionDefn = function (compId, symbols, fonts, resou
     delete states["Base State"]["${" + stage_name + "}"];
 
     // Inject the stage definition for all instances of a composition.
-    var stages = $("." + compId);
+    var stages = jQuery("." + compId);
     for (var i = 0; i < stages.length; i++) {
-      var stage_id = $(stages[i]).attr('id');
+      var stage_id = jQuery(stages[i]).attr('id');
       states["Base State"]["${_" + stage_id + "}"] = stage_src;
     }
   }
