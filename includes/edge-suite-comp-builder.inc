@@ -327,7 +327,7 @@ class EdgeCompositionBuilder {
     // Get archiver.
     $result = unzip($file, $destination);
     if (is_wp_error($result)) {
-      throw new Exception('Extraction of ' . $file . ' failed.');
+      throw new Exception('Extraction of ' . $file . ' failed: ' . $result->get_error_message());
     }
     // Add ignored files
     if(is_array($result)){
@@ -676,14 +676,14 @@ class EdgeCompositionBuilder {
   protected function moveEdgeFiles($src, $dest) {
     global $wp_filesystem;
     // TODO: Test.
-    $allowed_extensions = 'js,png,jpg,gif,svg,css';
+    $allowed_extensions = 'js,png,jpg,gif,svg,css,html';
     // Strip spaces.
     $allowed_extensions = str_replace(' ', '', $allowed_extensions);
     // Replace commas.
     $allowed_extensions = str_replace(',', '|', $allowed_extensions);
     // Check if list is valid.
     if (!preg_match('/^([a-zA-Z0-9]{2,6}\|)*([a-zA-Z0-9]{2,6})$/', $allowed_extensions)) {
-      $allowed_extensions = 'js|png|jpg|gif|svg|css';
+      $allowed_extensions = 'js|png|jpg|gif|svg|css|html';
     }
 
     $files = file_scan_directory($src, '/\.(' . $allowed_extensions . ')$/');
