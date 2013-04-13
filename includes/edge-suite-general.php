@@ -128,7 +128,9 @@ function unzip($file, $to){
         continue;
       }
 
-      $dir_creation = mkdir_recursive(trailingslashit($to) . dirname($info['name']));
+      if ( !mkdir_recursive(trailingslashit($to) . dirname($info['name']))) {
+        return new WP_Error('dir_creation_failed', __('Could not create directories for file to be extracted.'), $to . $info['name']);
+      }
       $contents = $z->getFromIndex($i);
       if ( false === $contents )
         return new WP_Error('extract_failed', __('Could not extract file from archive.'), $info['name']);
