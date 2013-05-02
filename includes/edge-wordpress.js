@@ -109,7 +109,7 @@ AdobeEdge.alterDomPaths = function (dom, compId) {
 
     // If the asset has one of the allowed file extensions, then add the project
     // specific prefix path (taken from the custom Wordpress object in AdobeEdge).
-    if (fillProp != null && fillProp.length > 1 && fillProp[1] != null && fillProp[1].match(/\.(js|png|jpg|svg|gif)$/)) {
+    if (fillProp != null && fillProp.length > 1 && fillProp[1] != null && typeof fillProp[1] == 'string' && fillProp[1].match(/\.(js|png|jpg|svg|gif)$/)) {
       fillProp[1] = AdobeEdge.pathPrefix.comps[compId] + '/' + fillProp[1];
     }
 
