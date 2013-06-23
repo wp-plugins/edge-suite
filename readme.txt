@@ -16,7 +16,7 @@ Upload of compositions through published OAM files. Integrate Adobe Edge Animate
 
 Detailed tutorials on how to install and use Edge Suite can be found here:
 
-* <a href="http://edgedocks.com/content/edge-suite-integrate-edge-animate-wordpress">Edge Docks - written tutorial</a>
+* <a href="http://old.edgedocks.com/content/edge-suite-integrate-edge-animate-wordpress">Edge Docks - written tutorial</a>
 * <a href="http://tv.adobe.com/watch/create-like-crazy-with-adobe-edge/episode-5-spice-up-your-wordpress-site-with-edge-animate/">Adobe TV - video tutorial</a>
 
 More resources can be found at <a href="http://edgedocks.com/edge_suite_wp">EdgeDocks.com</a>.
