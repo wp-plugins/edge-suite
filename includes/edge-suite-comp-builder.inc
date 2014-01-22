@@ -364,8 +364,8 @@ class EdgeCompositionBuilder {
 
       // Check if there were multiple main js files.
       if (count($main_edge_files) > 0) {
-        $msg_dir = substr($this->tmpDir, strlen($this->tmpDirBase));
-//        drupal_set_message('Multiple edge.js files found. Everything outside ' . $msg_dir . ' will be ignored.');
+//        $msg_dir = substr($this->tmpDir, strlen($this->tmpDirBase));
+//        $msg = 'Multiple edge.js files found. Everything outside ' . $msg_dir . ' will be ignored.';
       }
     }
   }
@@ -430,9 +430,10 @@ class EdgeCompositionBuilder {
 
     // Replace alterRegisterCompositionDefn() with custom call to alter
     // symbols and fonts.
-    $register_pattern = '/Edge.registerCompositionDefn\(compId,\s?symbols,\s?fonts,\s?resources\);/';
-    $register_replace = 'AdobeEdge.alterRegisterCompositionDefn(compId, symbols, fonts, resources, Edge.registerCompositionDefn);';
-    $content = preg_replace($register_pattern, $register_replace, $content);
+    $register_pattern = '/Edge.registerCompositionDefn\(compId,\s?symbols,\s?fonts,\s?resources(,\s?opts)?\);/';
+    $register_replace = 'AdobeEdge.alterRegisterCompositionDefn(compId, symbols, fonts, resources, opts, Edge.registerCompositionDefn);';
+    $register_pattern_found = 0;
+    $content = preg_replace($register_pattern, $register_replace, $content, $register_pattern_found);
 
     // Write modified file.
     $fh = fopen($file, "w");
@@ -674,19 +675,8 @@ class EdgeCompositionBuilder {
    * project directory to the permanent project directory.
    */
   protected function moveEdgeFiles($src, $dest) {
-    global $wp_filesystem;
-    // TODO: Test.
-    $allowed_extensions = 'js,png,jpg,gif,svg,css,html';
-    // Strip spaces.
-    $allowed_extensions = str_replace(' ', '', $allowed_extensions);
-    // Replace commas.
-    $allowed_extensions = str_replace(',', '|', $allowed_extensions);
-    // Check if list is valid.
-    if (!preg_match('/^([a-zA-Z0-9]{2,6}\|)*([a-zA-Z0-9]{2,6})$/', $allowed_extensions)) {
-      $allowed_extensions = 'js|png|jpg|gif|svg|css|html';
-    }
 
-    $files = file_scan_directory($src, '/\.(' . $allowed_extensions . ')$/');
+    $files = file_scan_directory($src, '/\.(' . EDGE_SUITE_ALLOWED_ASSET_EXTENSIONS . ')$/');
     // TODO: Does this work with nested folders?
     // Todo: Check mimetype. Are mime types calculated from the file extension?
     foreach ($files as $f) {

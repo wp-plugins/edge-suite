@@ -19,8 +19,7 @@ window.AdobeEdge = window.AdobeEdge || {};
  * @param compId
  *   Edge composition id
  */
-AdobeEdge.alterRegisterCompositionDefn = function (compId, symbols, fonts, resources, registerCompositionDefn) {
-
+AdobeEdge.alterRegisterCompositionDefn = function (compId, symbols, fonts, resources, opts, registerCompositionDefn) {
   // Check if one of the know patterns for the stage id can be found.
   var stage_name = "";
   var states = "";
@@ -53,20 +52,20 @@ AdobeEdge.alterRegisterCompositionDefn = function (compId, symbols, fonts, resou
     }
   }
 
-    for (var key in symbols) {
-        var dom = null;
-        // not minified version
-        if (symbols[key].content != undefined && symbols[key].content.dom != undefined) {
-            dom = symbols[key].content.dom;
-        }
-        // minified version
-        else if (symbols[key].cn != undefined && symbols[key].cn.dom != undefined) {
-            dom = symbols[key].cn.dom;
-        }
-        if(dom != null){
-            AdobeEdge.alterDomPaths(dom, compId);
-        }
+  for (var key in symbols) {
+    var dom = null;
+    // not minified version
+    if (symbols[key].content != undefined && symbols[key].content.dom != undefined) {
+        dom = symbols[key].content.dom;
     }
+    // minified version
+    else if (symbols[key].cn != undefined && symbols[key].cn.dom != undefined) {
+        dom = symbols[key].cn.dom;
+    }
+    if(dom != null){
+        AdobeEdge.alterDomPaths(dom, compId);
+    }
+  }
 
 
 
@@ -76,7 +75,15 @@ AdobeEdge.alterRegisterCompositionDefn = function (compId, symbols, fonts, resou
     fonts[font_key] = font.replace(/href="([a-z0-9_-]*.css)"/g, 'href="' + project_path + '\/$1"');
   }
 
-  registerCompositionDefn(compId, symbols, fonts, resources);
+  // Legacy opts parameter.
+  if (typeof registerCompositionDefn === 'undefined' && typeof opts === 'function'){
+    registerCompositionDefn = opts;
+    opts = null;
+    registerCompositionDefn(compId, symbols, fonts, resources);
+  }
+  else {
+    registerCompositionDefn(compId, symbols, fonts, resources, opts);
+  }
 
 }
 
@@ -113,6 +120,16 @@ AdobeEdge.alterDomPaths = function (dom, compId) {
       fillProp[1] = AdobeEdge.pathPrefix.comps[compId] + '/' + fillProp[1];
     }
 
+    // Handle audio files.
+    if (dom[key].hasOwnProperty('t') && dom[key].hasOwnProperty('sr') && dom[key].t === 'audio') {
+      var audio_sources = dom[key].sr;
+      for (var a = 0; a < audio_sources.length; a++) {
+        if(audio_sources[a].match(/\.(mp3)$/)) {
+          audio_sources[a] = AdobeEdge.pathPrefix.comps[compId] + '/' + audio_sources[a];
+        }
+      }
+    }
+
     // Check nested containers which are structured as a DOM as well
     if (dom[key].hasOwnProperty('c')) {
       AdobeEdge.alterDomPaths(dom[key].c, compId);
@@ -144,7 +161,7 @@ AdobeEdge.alterPreloadPaths = function (compId, aLoader, doDelayLoad, loadResour
     // Check the properties of the object for JS file names.
     for (var prop in obj) {
       if (typeof(obj[prop]) == 'string') {
-        if (obj[prop].substr(obj[prop].length - 3) === ".js") {
+        if (!obj[prop].match(/^(?:https?:)?\/\//) && obj[prop].substr(obj[prop].length - 3) === ".js") {
           // If the file is a general edge library, add the lib path prefix.
           if (obj[prop].substr(0, "edge_includes/".length) === "edge_includes/") {
             obj[prop] = AdobeEdge.pathPrefix.libs + "/" + obj[prop];
