@@ -429,11 +429,21 @@ class EdgeCompositionBuilder {
     $this->stageClass = $matches[1];
 
     // Replace alterRegisterCompositionDefn() with custom call to alter
-    // symbols and fonts.
-    $register_pattern = '/Edge.registerCompositionDefn\(compId,\s?symbols,\s?fonts,\s?resources(,\s?opts)?\);/';
-    $register_replace = 'AdobeEdge.alterRegisterCompositionDefn(compId, symbols, fonts, resources, opts, Edge.registerCompositionDefn);';
-    $register_pattern_found = 0;
-    $content = preg_replace($register_pattern, $register_replace, $content, $register_pattern_found);
+    // symbols and fonts. Older EA versions don't have the opts parameter.
+    $register_pattern = '/Edge\.registerCompositionDefn\(compId,\s?symbols,\s?fonts,\s?resources(,\s?opts)?\);/';
+    $register_matches = array();
+    if (preg_match($register_pattern, $content, $register_matches)) {
+      $opts = 'null';
+      if (isset($register_matches[1])) {
+        $opts = 'opts';
+      }
+      $register_replace = 'AdobeEdge.alterRegisterCompositionDefn(compId,symbols,fonts,resources,' . $opts . ',Edge.registerCompositionDefn);';
+      $register_pattern_found = 0;
+      $content = preg_replace($register_pattern, $register_replace, $content, -1, $register_pattern_found);
+    }
+    else {
+      throw new Exception('Unable to alter register handler.');
+    }
 
     // Write modified file.
     $fh = fopen($file, "w");
