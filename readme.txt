@@ -3,7 +3,7 @@ Contributors: ti2m
 Tags: media, animation, interactive, adobe edge animate, edge animate, edge, embed, integration
 Requires at least: 3.6
 Tested up to: 3.8
-Stable tag: 0.5
+Stable tag: 0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,6 +152,9 @@ Bugfixes
 
 = 0.5 =
 Bugfixes, jQuery no conflict mode, readme update
+
+= 0.6 =
+Bugfixes, readme update, better error handling, Edge Animate 3 updates
 
 
 
