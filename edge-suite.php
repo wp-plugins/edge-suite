@@ -1,12 +1,12 @@
 <?php
 /*
 Plugin Name: Edge Suite
-Plugin URI: http://edgedocks.com/edge_suite
+Plugin URI: http://wordpress.org/plugins/edge-suite/
 Description: Upload Adobe Edge compositions to your website.
 Author: Timm Jansen
 Author URI: http://www.timmjansen.com/
 Donate link: http://www.timmjansen.com/donate
-Version: 0.5
+Version: 0.6
 */
 
 /*  Copyright 2013 Timm Jansen (email: info at timmjansen.com)
