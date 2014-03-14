@@ -76,6 +76,10 @@ AdobeEdge.alterRegisterCompositionDefn = function (compId, symbols, fonts, resou
   }
 
   // Legacy opts parameter.
+  if (typeof registerCompositionDefn === 'undefined' && typeof opts === 'function') {
+    registerCompositionDefn = opts;
+    opts = null;
+  }
   if (registerCompositionDefn.length === 4){
     registerCompositionDefn(compId, symbols, fonts, resources);
   }
