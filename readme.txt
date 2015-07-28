@@ -21,8 +21,12 @@ Detailed tutorials on how to install and use Edge Suite can be found here:
 
 More resources can be found at <a href="http://edgedocks.com/">EdgeDocks.com</a>.
 
-The plugin has been intensively tested over the last couple of months and seems to be rather stable, it is up to you though if you want to try and use it in production. If you experience
-any problems please read the FAQ before opening an issue in the support section. If you like the plugin please vote for it and let us know that it works for your wordpress version.
+The plugin has been intensively tested over the last couple of months and seems to be rather stable, it is up to you though if you want to try and use it in production.
+If you experience any problems please read the FAQ before opening an issue in the support section.
+
+WARNING: Future versions of Edge Animate might not be supported! The development of the Edge Suite plugin has been very time consuming due to the constant change of the
+Edge Animate runtime. I can not keep this up and am therefore not sure that I can support future versions. If you are interested in taking over the plugin for further development
+please contact me. Take a look at the FAQ for manual integration of animations as an alternative to the plugin.
 
 == Features ==
 
@@ -40,6 +44,27 @@ any problems please read the FAQ before opening an issue in the support section.
 When experiencing any problems, please always try the latest dev version (http://downloads.wordpress.org/plugin/edge-suite.zip).
  Manual installation is needed. New features and bugfixes are always tested first in the dev version before they are being merged
  into the stable version.
+
+= Manual integration =
+
+Animation with newer versions of Edge Animate can easily be integrated manually without depending on the plugin. Consider that as an
+option when running into problems.
+
+Publish your composition with option "Animate Deployment Package" and rename the .oam to .zip. Unpack it and upload the "Asset" folder
+to your server under "myproject" (maybe /wp-content/uploads/myproject). Open the contained main project .html file. Copy the
+
+    <div id="Stage" class="EDGE-11111111"></div>
+
+line into your desired template. Also copy everything in between the 'script' tags (including the tags) and insert it into the same template.
+The first line after the opening script tag should read
+
+    var custHtmlRoot="";
+
+Adjust that so it matches the relative project directory. E.g.:
+
+    var custHtmlRoot="/wp-content/uploads/myproject";
+
+Save the template. The animation should come up.
 
 = General things to check when problems occur =
 
